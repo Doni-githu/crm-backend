@@ -34,11 +34,9 @@ class AdminS(serializers.ModelSerializer):
         instance.surname = validate_data.get("surname", instance.surname)
         instance.username = validate_data.get("username", instance.username)
         instance.password = validate_data.get("password", instance.password)
-        instance.active_time = validate_data.get("active_time", instance.active_time)
         instance.save()
 
         return instance
-
 
 
 class TeacherS(serializers.ModelSerializer):
@@ -71,7 +69,6 @@ class TeacherS(serializers.ModelSerializer):
         instance.surname = validate_data.get("surname", instance.surname)
         instance.username = validate_data.get("username", instance.username)
         instance.salary = validate_data.get("salary", instance.salary)
-        instance.src = validate_data.get("image", instance.src)
         instance.save()
 
         professions = validate_data.pop("profession_id")
@@ -81,7 +78,7 @@ class TeacherS(serializers.ModelSerializer):
 
         if technologies:
             instance.technologies.set(technologies)
-            
+
         return instance
 
 
@@ -124,10 +121,6 @@ class StudentS(serializers.ModelSerializer):
         instance.surname = validate_data.get("surname", instance.surname)
         instance.username = validate_data.get("username", instance.username)
         instance.phone = validate_data.get("phone", instance.phone)
-        instance.email = validate_data.get("email", instance.email)
-        instance.extra_phone_number = validate_data.get(
-            "extra_phone_number", instance.extra_phone_number
-        )
         instance.password = validate_data.get("password", instance.password)
         instance.save()
 
@@ -162,11 +155,7 @@ class GroupsS(serializers.ModelSerializer):
         write_only=True, many=True, queryset=Technology.objects.all()
     )
     students_id = serializers.PrimaryKeyRelatedField(
-        write_only=True, many=False, queryset=Student.objects.all()
-    )
-    
-    teacher_id = serializers.PrimaryKeyRelatedField(
-        write_only=True, many=False, queryset=Teacher.objects.all()
+        write_only=True, many=True, queryset=Student.objects.all()
     )
 
     class Meta:
@@ -216,13 +205,14 @@ class DireactorS(serializers.ModelSerializer):
     class Meta:
         fields = "__all__"
         model = Director
-        
-        
+
+
 class PaymentS(serializers.ModelSerializer):
     student = StudentS()
     group = GroupsS()
     teacher = TeacherS()
     administrator = AdminS()
+
     class Meta:
         fields = "__all__"
         model = Payment
@@ -230,7 +220,6 @@ class PaymentS(serializers.ModelSerializer):
     def create(self, validate_data):
         pay = Payment.objects.create(**validate_data)
         return pay
-
 
 
 from rest_framework import serializers

@@ -75,26 +75,31 @@ def payment_list(req):
         return Response(ser.data)
 
 
-@api_view(['PUT', 'GET', 'DELETE'])
+@api_view(["PUT", "GET", "DELETE"])
 def payment_one(req, id):
     found = Payment.objects.get(id=id)
-    if req.method == 'GET':
+    if req.method == "GET":
         ser = PaymentS(found)
         return Response(ser.data, status=status.HTTP_200_OK)
-    
+
     if req.method == "PUT":
         ser = PaymentS(instance=found, data=req.data)
-        
+
         if ser.is_valid():
             ser.save()
             return Response({"status": "your change ok"}, status=status.HTTP_200_OK)
         else:
-            return Response({"message": "some thins went wrong"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"message": "some thins went wrong"}, status=status.HTTP_400_BAD_REQUEST
+            )
 
-    if req.method == 'DELETE':
+    if req.method == "DELETE":
         found.delete()
-        return Response({"message": "pay data was successfuly deleted"}, status=status.HTTP_202_ACCEPTED)
-    
+        return Response(
+            {"message": "pay data was successfuly deleted"},
+            status=status.HTTP_202_ACCEPTED,
+        )
+
 
 @api_view(["GET", "POST"])
 def teacher_list(req):
@@ -115,6 +120,15 @@ def teacher_list(req):
         return Response(ser.data)
 
 
+@api_view(["GET"])
+def week_list(req):
+    if req.method == "GET":
+        days = WeekDays.objects.all()
+        ser = WeekDaysS(days, many=True)
+
+        return Response(ser.data, status=status.HTTP_200_OK)
+
+
 @api_view(["GET", "POST"])
 def student_list(req):
     if req.method == "GET":
@@ -129,7 +143,9 @@ def student_list(req):
         if ser.is_valid():
             ser.save()
         else:
-            return Response("bad req")
+            return Response(
+                {"message": "Bad request"}, status=status.HTTP_400_BAD_REQUEST
+            )
 
         return Response(ser.data)
 
@@ -200,7 +216,10 @@ def groups_list(req):
         if ser.is_valid():
             ser.save()
         else:
-            return Response("bad request")
+            return Response(
+                {"message": "some things went wrong"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         return Response(ser.data)
 
@@ -224,27 +243,26 @@ def direcktor_list(req):
 
 @api_view(["GET", "PUT", "DELETE"])
 def direcktor_detail(req, id):
-    if req.data["role"] == "DR" or req.data["role"] == "DIRECTOR":
-        try:
-            direktor = Director.objects.get(id=id)
-        except:
-            return Response("item doesn't exist")
+    try:
+        direktor = Director.objects.get(id=id)
+    except:
+        return Response("item doesn't exist")
 
-        if req.method == "GET":
-            ser = DireactorS(direktor)
-            return Response(ser.data)
+    if req.method == "GET":
+        ser = DireactorS(direktor)
+        return Response(ser.data)
 
-        elif req.method == "PUT":
-            ser = DireactorS(instance=direktor, data=req.data)
-            if ser.is_valid():
-                ser.save()
-            else:
-                return Response("bad request")
-            return Response(ser.data)
+    elif req.method == "PUT":
+        ser = DireactorS(instance=direktor, data=req.data)
+        if ser.is_valid():
+            ser.save()
+        else:
+            return Response("bad request")
+        return Response(ser.data)
 
-        elif req.method == "DELETE":
-            direktor.delete()
-            return Response("item has deleted")
+    elif req.method == "DELETE":
+        direktor.delete()
+        return Response("item has deleted")
 
 
 @api_view(["GET", "PUT", "DELETE"])
@@ -274,90 +292,72 @@ def davomat_detail(req, id):
 
 @api_view(["GET", "PUT", "DELETE"])
 def student_detail(req, id):
-    if (
-        req.data["role"] == "DR"
-        or req.data["role"] == "DIRECTOR"
-        and req.data["role"] == "AD"
-        or req.data["role"] == "ADMINISTRATOR"
-    ):
-        try:
-            student = Student.objects.get(id=id)
-        except:
-            return Response("item doesn't exist")
-        if req.method == "GET":
-            ser = StudentS(student)
-            return Response(ser.data)
-        elif req.method == "PUT":
-            ser = StudentS(instance=student, data=req.data)
-            if ser.is_valid():
-                ser.save()
-            return Response(ser.data)
-        elif req.method == "DELETE":
-            student.delete()
-            return Response("item has deleted")
+    try:
+        student = Student.objects.get(id=id)
+    except:
+        return Response("item doesn't exist")
+    if req.method == "GET":
+        ser = StudentS(student)
+        return Response(ser.data)
+    elif req.method == "PUT":
+        ser = StudentS(instance=student, data=req.data)
+        if ser.is_valid():
+            ser.save()
+        return Response(ser.data)
+    elif req.method == "DELETE":
+        student.delete()
+        return Response("item has deleted")
 
 
 @api_view(["GET", "PUT", "DELETE"])
 def technology_detail(req, id):
-    if (
-        req.data["role"] == "DR"
-        or req.data["role"] == "DIRECTOR"
-        and req.data["role"] == "AD"
-        or req.data["role"] == "ADMINISTRATOR"
-    ):
-        try:
-            technology = Technology.objects.get(id=id)
-        except:
-            return Response("item doesn't exist")
+    try:
+        technology = Technology.objects.get(id=id)
+    except:
+        return Response("item doesn't exist")
 
-        if req.method == "GET":
-            ser = TechnologyS(technology)
-            return Response(ser.data)
+    if req.method == "GET":
+        ser = TechnologyS(technology)
+        return Response(ser.data)
 
-        if req.method == "PUT":
-            ser = TechnologyS(instance=technology, data=req.data)
+    if req.method == "PUT":
+        ser = TechnologyS(instance=technology, data=req.data)
 
-            if ser.is_valid():
-                ser.save()
-            else:
-                return Response("bad req")
+        if ser.is_valid():
+            ser.save()
+        else:
+            return Response("bad req")
 
-            return Response(ser.data)
+        return Response(ser.data)
 
-        if req.method == "DELETE":
-            technology.delete()
-            return Response("item has deleted")
+    if req.method == "DELETE":
+        technology.delete()
+        return Response("item has deleted")
 
 
 @api_view(["GET", "PUT", "DELETE"])
 def profession_detail(req, id):
-    if (
-        req.data["role"] == "DR"
-        or req.data["role"] == "DIRECTOR"
-        and req.data["role"] == "AD"
-        or req.data["role"] == "ADMINISTRATOR"
-    ):
-        try:
-            profession = Profession.objects.get(id=id)
-        except:
-            return Response("item doesn't exist")
+    try:
+        profession = Profession.objects.get(id=id)
+    except:
+        return Response("item doesn't exist")
 
-        if req.method == "GET":
-            ser = ProfessionS(profession)
-            return Response(ser.data)
+    if req.method == "GET":
+        ser = ProfessionS(profession)
+        return Response(ser.data)
 
-        elif req.method == "PUT":
-            ser = ProfessionS(instance=profession, data=req.data)
-            if ser.is_valid():
-                ser.save()
-            else:
-                return Response("bad req")
+    elif req.method == "PUT":
+        ser = ProfessionS(instance=profession, data=req.data)
+        if ser.is_valid():
+            ser.save()
+        else:
+            return Response("bad req")
 
-            return Response(ser.data)
+        return Response(ser.data)
 
-        elif req.method == "DELETE":
-            profession.delete()
-            return Response("item has deleted")
+    elif req.method == "DELETE":
+        profession.delete()
+        return Response("item has deleted")
 
 
 @api_view(["GET", "PUT", "DElETE"])

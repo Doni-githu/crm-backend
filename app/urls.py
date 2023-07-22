@@ -31,11 +31,14 @@ urlpatterns = [
 
     path('payment/', payment_list),
     path('payment/<int:id>/', payment_one),
-    
+        
     path('accounts/register', RegistrationView.as_view(), name='register'),
     path('accounts/login', LoginView.as_view(), name='login'),
     path('accounts/logout', LogoutView.as_view(), name='logout'),
     path('accounts/change-password', ChangePasswordView.as_view(), name='register'),
     path('accounts/user/<str:token>', get_user, name='token_refresh'),
-    path('account/<int:id>/<str:role>', getUser)
+    path('account/<int:id>/<str:role>', getUser),
+    
+    
+    path("days/", week_list)
 ]

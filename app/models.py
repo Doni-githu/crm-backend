@@ -13,8 +13,6 @@ class Admin(models.Model):
     surname = models.CharField(max_length=50)
     username = models.CharField(max_length=50, unique=True)
     password = models.CharField(max_length=40)
-    active_time = models.DateField(default=timezone.now)
-    updated_time = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.name
@@ -25,9 +23,6 @@ class Director(models.Model):
     surname = models.CharField(max_length=50)
     username = models.CharField(max_length=50, unique=True)
     password = models.CharField(max_length=40)
-    active_time = models.DateTimeField(default=timezone.now)
-    # created_time = models.DateTimeField(auto_now_add=True)
-    updated_time = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.name
@@ -53,11 +48,8 @@ class Teacher(models.Model):
     username = models.CharField(max_length=50, unique=True)
     password = models.CharField(max_length=40)
     salary = models.IntegerField()
-    src = models.ImageField(upload_to="teacher_images/")
     profession = models.ManyToManyField(Profession, related_name="profession_t")
     technologies = models.ManyToManyField(Technology, related_name="technologies_t")
-    active_time = models.DateField(default=timezone.now)
-    updated_time = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.name
@@ -68,11 +60,9 @@ class Student(models.Model):
     surname = models.CharField(max_length=255)
     username = models.CharField(max_length=255, unique=True)
     phone = models.IntegerField()
-    src = models.ImageField(upload_to="student_image/", null=True)
     profession = models.ManyToManyField(Profession, related_name="profession_s")
     technologies = models.ManyToManyField(Technology, related_name="technologies")
     teachers = models.ManyToManyField(Teacher, related_name="teacher_f")
-    email = models.EmailField(max_length=150, unique=True, null=True)
     password = models.CharField(max_length=50, null=True)
 
     def __str__(self):
@@ -101,11 +91,10 @@ class Groups(models.Model):
     name = models.CharField(max_length=50, unique=True)
     teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, null=True)
     price = models.IntegerField()
-    period = models.IntegerField()
     week_days = models.ManyToManyField(WeekDays, related_name="days")
-    begin_date = models.DateField()
-    when_start = models.TimeField(null=True)
-    complete_date = models.DateField()
+    begin_date = models.CharField(max_length=50)
+    when_start = models.CharField(max_length=50)
+    complete_date = models.CharField(max_length=50)
     technologies = models.ManyToManyField(Technology, related_name="group_technology")
     students = models.ManyToManyField(Student, related_name="students")
 
@@ -120,10 +109,9 @@ class Payment(models.Model):
     teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE)
     administrator = models.ForeignKey(Admin, on_delete=models.CASCADE)
     month = models.CharField(max_length=50, null=True)
-    
+
     def __str__(self):
         return f"{self.quantity} {self.student.name}"
-    
 
 
 DISCOUNT_CODE_TYPES_CHOICES = [
@@ -149,10 +137,6 @@ class MyUserManager(BaseUserManager):
         return user
 
     def create_superuser(self, email, username, date_of_birth, password=None):
-        """
-        Creates and saves a superuser with the given email, date of
-        birth and password.
-        """
         user = self.create_user(
             email,
             password=password,
