@@ -37,6 +37,9 @@ class Profession(models.Model):
 
 class Technology(models.Model):
     name = models.CharField(max_length=255)
+    profession = models.ForeignKey(
+        Profession, on_delete=models.CASCADE, null=True, related_name="technologies"
+    )
 
     def __str__(self):
         return self.name
@@ -69,17 +72,6 @@ class Student(models.Model):
         return self.name
 
 
-class Davomat(models.Model):
-    sana = models.DateField(max_length=255)
-    keldi = models.CharField(max_length=5)
-    student = models.ForeignKey(
-        Student, related_name="davomat", on_delete=models.CASCADE
-    )
-
-    def __str__(self):
-        return self.student.name
-
-
 class WeekDays(models.Model):
     name = models.CharField(max_length=255)
 
@@ -89,7 +81,6 @@ class WeekDays(models.Model):
 
 class Groups(models.Model):
     name = models.CharField(max_length=50, unique=True)
-    teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, null=True)
     price = models.IntegerField()
     week_days = models.ManyToManyField(WeekDays, related_name="days")
     begin_date = models.CharField(max_length=50)
@@ -97,9 +88,22 @@ class Groups(models.Model):
     complete_date = models.CharField(max_length=50)
     technologies = models.ManyToManyField(Technology, related_name="group_technology")
     students = models.ManyToManyField(Student, related_name="students")
+    teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
         return self.name
+
+
+class Davomat(models.Model):
+    sana = models.CharField(max_length=255)
+    keldi = models.CharField(max_length=5)
+    student = models.ForeignKey(
+        Student, related_name="davomat", on_delete=models.CASCADE
+    )
+    group = models.ForeignKey(Groups, on_delete=models.CASCADE, null=True)
+
+    def __str__(self):
+        return self.student.name
 
 
 class Payment(models.Model):
@@ -109,6 +113,7 @@ class Payment(models.Model):
     teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE)
     administrator = models.ForeignKey(Admin, on_delete=models.CASCADE)
     month = models.CharField(max_length=50, null=True)
+    payment = models.CharField(max_length=40, null=True)
 
     def __str__(self):
         return f"{self.quantity} {self.student.name}"

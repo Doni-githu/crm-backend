@@ -65,12 +65,14 @@ def payment_list(req):
         return Response(ser.data)
 
     elif req.method == "POST":
-        ser = PaymentS(data=req.data)
+        ser = PaymentS2(data=req.data)
 
         if ser.is_valid():
             ser.save()
         else:
-            return Response("bad req")
+            return Response(
+                {"message": "some thing went wrong"}, status=status.HTTP_400_BAD_REQUEST
+            )
 
         return Response(ser.data)
 
@@ -212,7 +214,7 @@ def groups_list(req):
         return Response(ser.data)
 
     if req.method == "POST":
-        ser = GroupsS(data=req.data)
+        ser = GroupsS2(data=req.data)
         if ser.is_valid():
             ser.save()
         else:
@@ -221,7 +223,7 @@ def groups_list(req):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        return Response(ser.data)
+        return Response(ser.data, status=status.HTTP_200_OK)
 
 
 @api_view(["GET", "POST"])
@@ -373,18 +375,20 @@ def groups_detail(req, id):
         return Response(ser.data)
 
     elif req.method == "PUT":
-        ser = GroupsS(instance=group, data=req.data)
+        ser = GroupsS2(instance=group, data=req.data)
 
         if ser.is_valid():
             ser.save()
         else:
-            return Response("bad request")
+            return Response(
+                {"message": "what is shit"}, status=status.HTTP_400_BAD_REQUEST
+            )
 
         return Response(ser.data)
 
     elif req.method == "DELETE":
         group.delete()
-        return Response("item has deleted")
+        return Response({"message": "item has deleted"}, status=status.HTTP_202_ACCEPTED)
 
 
 @api_view(["GET", "PUT", "DELETE"])

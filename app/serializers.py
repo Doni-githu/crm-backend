@@ -2,21 +2,26 @@ from rest_framework import serializers
 from .models import *
 
 
-class TechnologyS(serializers.ModelSerializer):
+class TechnologyS(serializers.ModelSerializer):    
     class Meta:
         fields = "__all__"
         model = Technology
 
 
 class ProfessionS(serializers.ModelSerializer):
+    technologies = TechnologyS(many=True, read_only=True)
+
+
     class Meta:
         fields = "__all__"
         model = Profession
 
+    
+            
 
 class DavomatS(serializers.ModelSerializer):
     class Meta:
-        fields = ["id", "sana", "keldi", "student"]
+        fields = "__all__"
         model = Davomat
 
 
@@ -143,11 +148,10 @@ class WeekDaysS(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class GroupsS(serializers.ModelSerializer):
+class GroupsS2(serializers.ModelSerializer):
     week_days = WeekDaysS(many=True, read_only=True)
     technologies = TechnologyS(many=True, read_only=True)
     students = StudentS(many=True, read_only=True)
-    teacher = TeacherS(many=False, read_only=True)
     week_days_id = serializers.PrimaryKeyRelatedField(
         write_only=True, many=True, queryset=WeekDays.objects.all()
     )
@@ -157,6 +161,64 @@ class GroupsS(serializers.ModelSerializer):
     students_id = serializers.PrimaryKeyRelatedField(
         write_only=True, many=True, queryset=Student.objects.all()
     )
+
+    class Meta:
+        model = Groups
+        fields = "__all__"
+
+    def create(self, validate_data):
+        week_days = validate_data.pop("week_days_id")
+        technologies = validate_data.pop("technologies_id")
+        students2 = validate_data.pop("students_id")
+        group = Groups.objects.create(**validate_data)
+        group.save()
+        if week_days:
+            group.week_days.set(week_days)
+        if technologies:
+            group.technologies.set(technologies)
+        if students2:
+            group.students.set(students2)
+        return group
+
+    def update(self, instance, validate_data):
+        week_days = validate_data.pop("week_days_id")
+        technologies = validate_data.pop("technologies_id")
+        students = validate_data.pop("students_id")
+
+        instance.name = validate_data.get("name", instance.name)
+        instance.price = validate_data.get("price", instance.price)
+        instance.begin_date = validate_data.get("begin_date", instance.begin_date)
+        instance.complete_date = validate_data.get(
+            "complete_date", instance.complete_date
+        )
+        instance.when_start = validate_data.get("when_start", instance.when_start)
+        instance.teacher = validate_data.get("teacher", instance.teacher)
+        instance.save()
+
+        if week_days:
+            instance.week_days.set(week_days)
+        if technologies:
+            instance.technologies.set(technologies)
+        if students:
+            instance.students.set(students)
+
+        return instance
+
+
+class GroupsS(serializers.ModelSerializer):
+    week_days = WeekDaysS(many=True, read_only=True)
+    technologies = TechnologyS(many=True, read_only=True)
+    students = StudentS(many=True, read_only=True)
+    week_days_id = serializers.PrimaryKeyRelatedField(
+        write_only=True, many=True, queryset=WeekDays.objects.all()
+    )
+    technologies_id = serializers.PrimaryKeyRelatedField(
+        write_only=True, many=True, queryset=Technology.objects.all()
+    )
+    students_id = serializers.PrimaryKeyRelatedField(
+        write_only=True, many=True, queryset=Student.objects.all()
+    )
+    teacher = TeacherS()
 
     class Meta:
         model = Groups
@@ -208,11 +270,21 @@ class DireactorS(serializers.ModelSerializer):
 
 
 class PaymentS(serializers.ModelSerializer):
+    teacher = TeacherS()
     student = StudentS()
     group = GroupsS()
-    teacher = TeacherS()
     administrator = AdminS()
 
+    class Meta:
+        fields = "__all__"
+        model = Payment
+
+    def create(self, validate_data):
+        pay = Payment.objects.create(**validate_data)
+        return pay
+
+
+class PaymentS2(serializers.ModelSerializer):
     class Meta:
         fields = "__all__"
         model = Payment
@@ -266,3 +338,13 @@ class PasswordChangeSerializer(serializers.Serializer):
         if not self.context["request"].user.check_password(value):
             raise serializers.ValidationError({"current_password": "Does not match"})
         return value
+
+
+# [
+#     {
+#         "name":"frontend",
+#         "technologies":[
+#             {}
+#         ]
+#     }
+# ]
