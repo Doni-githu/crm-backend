@@ -3,3 +3,4 @@ djangorestframework
 Pillow
 djangorestframework-simplejwt
 gunicorn==19.7.1
+django-cors-headers
