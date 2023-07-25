@@ -2,3 +2,4 @@ django
 djangorestframework
 Pillow
 djangorestframework-simplejwt
+gunicorn==19.7.1
