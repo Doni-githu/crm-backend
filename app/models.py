@@ -61,12 +61,9 @@ class Teacher(models.Model):
 class Student(models.Model):
     name = models.CharField(max_length=255)
     surname = models.CharField(max_length=255)
-    username = models.CharField(max_length=255, unique=True)
     phone = models.IntegerField()
     profession = models.ManyToManyField(Profession, related_name="profession_s")
-    technologies = models.ManyToManyField(Technology, related_name="technologies")
     teachers = models.ManyToManyField(Teacher, related_name="teacher_f")
-    password = models.CharField(max_length=50, null=True)
 
     def __str__(self):
         return self.name
@@ -114,6 +111,7 @@ class Payment(models.Model):
     administrator = models.ForeignKey(Admin, on_delete=models.CASCADE)
     month = models.CharField(max_length=50, null=True)
     payment = models.CharField(max_length=40, null=True)
+    when = models.CharField(max_length=40, null=True)
 
     def __str__(self):
         return f"{self.quantity} {self.student.name}"

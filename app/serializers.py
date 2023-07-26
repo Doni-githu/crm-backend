@@ -2,7 +2,7 @@ from rest_framework import serializers
 from .models import *
 
 
-class TechnologyS(serializers.ModelSerializer):    
+class TechnologyS(serializers.ModelSerializer):
     class Meta:
         fields = "__all__"
         model = Technology
@@ -11,13 +11,10 @@ class TechnologyS(serializers.ModelSerializer):
 class ProfessionS(serializers.ModelSerializer):
     technologies = TechnologyS(many=True, read_only=True)
 
-
     class Meta:
         fields = "__all__"
         model = Profession
 
-    
-            
 
 class DavomatS(serializers.ModelSerializer):
     class Meta:
@@ -95,9 +92,6 @@ class StudentS(serializers.ModelSerializer):
     profession_id = serializers.PrimaryKeyRelatedField(
         write_only=True, many=True, queryset=Profession.objects.all()
     )
-    technologies_id = serializers.PrimaryKeyRelatedField(
-        write_only=True, many=True, queryset=Technology.objects.all()
-    )
     teachers_id = serializers.PrimaryKeyRelatedField(
         write_only=True, many=True, queryset=Teacher.objects.all()
     )
@@ -108,15 +102,12 @@ class StudentS(serializers.ModelSerializer):
 
     def create(self, validate_data):
         professions = validate_data.pop("profession_id")
-        technologies = validate_data.pop("technologies_id")
         teachers = validate_data.pop("teachers_id")
 
         student = Student.objects.create(**validate_data)
 
         if professions:
             student.profession.set(professions)
-        if technologies:
-            student.technologies.set(technologies)
         if teachers:
             student.teachers.set(teachers)
         return student
@@ -124,19 +115,14 @@ class StudentS(serializers.ModelSerializer):
     def update(self, instance, validate_data):
         instance.name = validate_data.get("name", instance.name)
         instance.surname = validate_data.get("surname", instance.surname)
-        instance.username = validate_data.get("username", instance.username)
         instance.phone = validate_data.get("phone", instance.phone)
-        instance.password = validate_data.get("password", instance.password)
         instance.save()
 
         professions = validate_data.pop("profession_id")
-        technologies = validate_data.pop("technologies_id")
         teachers = validate_data.pop("teachers_id")
 
         if professions:
             instance.profession.set(professions)
-        if technologies:
-            instance.technologies.set(technologies)
         if teachers:
             instance.teachers.set(teachers)
         return instance
