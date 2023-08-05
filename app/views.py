@@ -182,7 +182,7 @@ def davomat_list(req):
         if ser.is_valid():
             ser.save()
         else:
-            return Response("bad req")
+            return Response({"message": "bad req"}, status=status.HTTP_400_BAD_REQUEST)
 
         return Response(ser.data)
 
@@ -272,7 +272,7 @@ def davomat_detail(req, id):
     try:
         davomat = Davomat.objects.get(id=id)
     except:
-        return Response("item doesn't exist", status=status.HTTP_400_BAD_REQUEST)
+        return Response({"message": "item doesn't exist"}, status=status.HTTP_400_BAD_REQUEST)
 
     if req.method == "GET":
         ser = DavomatS(davomat)

@@ -93,7 +93,7 @@ class Groups(models.Model):
 
 class Davomat(models.Model):
     sana = models.CharField(max_length=255)
-    keldi = models.CharField(max_length=5)
+    keldi = models.CharField(max_length=55)
     student = models.ForeignKey(
         Student, related_name="davomat", on_delete=models.CASCADE
     )
