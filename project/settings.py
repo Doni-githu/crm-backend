@@ -123,7 +123,7 @@ STATIC_URL = 'static/'
 MEDIA_ROOT = str(BASE_DIR.joinpath('media'))
 
 MEDIA_URL = 'media/'
-CORS_ALLOWED_ORIGINS = ["http://localhost:3000", "https://crm-yj1p.onrender.com"]
+CORS_ALLOWED_ORIGINS = ["http://localhost:3000", "https://crm-yj1p.onrender.com", "https://crm-for-education-sigma.vercel.app"]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
